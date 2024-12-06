@@ -3,6 +3,12 @@ local M = {}
 -- {{{
 -- Function to display the date from a timestamp in a floating window
 function M.render_date()
+    -- Prevent the user from invoking this command inside a floating window we created; however,
+    -- allow them to have multiple floating windows open so they can compare timestamps.
+    if vim.api.nvim_win_get_config(0).relative ~= '' then
+        return
+    end
+
     -- Get the word under the cursor
     local word = vim.fn.expand('<cword>')
 
