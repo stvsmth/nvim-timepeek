@@ -22,7 +22,7 @@ function M.render_date()
     -- ... Create a scratch buffer
     local buf = vim.api.nvim_create_buf(false, true)
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, { date_str_utc, date_str_loc })
-    vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
+    vim.api.nvim_set_option_value('bufhidden', 'wipe', { buf = buf })
 
     -- ... escape and return will close
     vim.api.nvim_buf_set_keymap(buf, 'n', '<CR>', ':close<CR>', { noremap = true, silent = true })
@@ -39,7 +39,7 @@ function M.render_date()
         border = 'rounded',
     }
     -- Set the buffer to be non-modifiable and display
-    vim.api.nvim_buf_set_option(buf, 'modifiable', false)
+    vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
     vim.api.nvim_open_win(buf, true, opts)
 
 end
