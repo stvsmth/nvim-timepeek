@@ -3,14 +3,29 @@ local M = {}
 -- {{{
 -- Function to display the date from a timestamp in a floating window
 function M.render_date()
-
     -- Get the word under the cursor
     local word = vim.fn.expand('<cword>')
+
+    -- We may get a negative number; the cursor may be under the '-' of a negative timestamp
+    -- or it may be the first character of a timestamp with the cursor in the word. Also be
+    -- sure that we don't have trailing characters.
+    local full_word = vim.fn.expand('<cWORD>')
+    if full_word:sub(1, 1) == '-' then
+        word = '-' .. word
+    end
 
     -- Check if the word is a valid timestamp
     local timestamp = tonumber(word)
     if timestamp == nil then
-        vim.notify("The word under the cursor is not a valid timestamp.", vim.log.levels.ERROR)
+        -- vim.notify("The current word is not a valid timestamp.", vim.log.levels.ERROR)
+        return
+    end
+
+    -- check to see if we're working with milliseconds (check absolute value)
+    if math.abs(timestamp) > 1000000000000 and math.abs(timestamp) < 9999999999999 then
+        timestamp = timestamp / 1000
+    elseif math.abs(timestamp) > 9999999999999 then
+        -- vim.notify("The current word is not a valid timestamp.", vim.log.levels.ERROR)
         return
     end
 
@@ -41,7 +56,7 @@ function M.render_date()
     -- Set the buffer to be non-modifiable and display
     vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
     vim.api.nvim_open_win(buf, true, opts)
-
 end
+
 -- }}}
 return M
