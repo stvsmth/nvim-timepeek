@@ -26,6 +26,7 @@ local config = vim.deepcopy(default_config)
 function M.setup(opts)
     opts = opts or {}
     config = vim.tbl_deep_extend('force', config, opts)
+    M.config = config -- update the exported config table
 
     -- Set up keymaps if enabled
     if config.use_default_mappings and config.mappings.peek then
