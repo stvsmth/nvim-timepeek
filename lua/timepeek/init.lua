@@ -61,9 +61,9 @@ function M.render_date()
     end
 
     -- check to see if we're working with milliseconds (check absolute value)
-    if math.abs(timestamp) > 1000000000000 and math.abs(timestamp) < 9999999999999 then
+    if math.abs(timestamp) >= 1000000000000 and math.abs(timestamp) < 10000000000000 then
         timestamp = timestamp / 1000
-    elseif math.abs(timestamp) > 9999999999999 then
+    elseif math.abs(timestamp) >= 10000000000000 then
         -- vim.notify("The current word is not a valid timestamp.", vim.log.levels.ERROR)
         return
     end
