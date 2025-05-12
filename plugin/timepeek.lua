@@ -1,7 +1,4 @@
-vim.api.nvim_set_keymap(
-  "n",
-  "<Leader>tt",
-  [[<Cmd>lua require('timepeek').render_date()<CR>]],
-  { noremap = true, silent = true }
-)
-
+-- Set up the plugin with default configuration
+-- This ensures compatibility with existing installations
+-- Users can override this by calling setup() in their configuration
+require('timepeek').setup()

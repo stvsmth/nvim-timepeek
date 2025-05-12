@@ -1,6 +1,39 @@
 local M = {}
 
--- {{{
+-- Default configuration
+local default_config = {
+  mappings = {
+    peek = "<Leader>tt",
+  },
+  use_default_mappings = true,
+  window = {
+    border = 'rounded',
+    style = "minimal",
+    relative = "cursor",
+    row = 1,
+    col = 0
+  },
+  formats = {
+    utc = "!%Y-%m-%d %H:%M:%S UTC",
+    local_time = "%Y-%m-%d %H:%M:%S %Z"
+  }
+}
+
+-- Plugin configuration (populated by setup)
+local config = vim.deepcopy(default_config)
+
+-- Setup function to configure the plugin
+function M.setup(opts)
+    opts = opts or {}
+    config = vim.tbl_deep_extend("force", config, opts)
+
+  -- Set up keymaps if enabled
+  if config.use_default_mappings and config.mappings.peek then
+    vim.keymap.set("n", config.mappings.peek, function()
+      M.render_date()
+    end, { noremap = true, silent = true })
+  end
+end
 -- Function to display the date from a timestamp in a floating window
 function M.render_date()
     -- Prevent the user from invoking this command inside a floating window we created; however,
@@ -36,8 +69,8 @@ function M.render_date()
     end
 
     -- Convert the timestamp to a human-readable dates, top is UTC, bottom is local
-    local date_str_utc = '  ' .. os.date("!%Y-%m-%d %H:%M:%S UTC", timestamp) .. '  '
-    local date_str_loc = '  ' .. os.date("%Y-%m-%d %H:%M:%S %Z", timestamp) .. '  '
+    local date_str_utc = '  ' .. os.date(config.formats.utc, timestamp) .. '  '
+    local date_str_loc = '  ' .. os.date(config.formats.local_time, timestamp) .. '  '
 
     -- Create a new buffer for the floating window
     -- ... Create a scratch buffer
@@ -51,18 +84,20 @@ function M.render_date()
 
     -- ... window options, next to the cursor
     local opts = {
-        style = "minimal",
-        relative = "cursor",
+        style = config.window.style,
+        relative = config.window.relative,
         width = #date_str_utc,
         height = 2,
-        row = 1,
-        col = 0,
-        border = 'rounded',
+        row = config.window.row,
+        col = config.window.col,
+        border = config.window.border,
     }
     -- Set the buffer to be non-modifiable and display
     vim.api.nvim_set_option_value('modifiable', false, { buf = buf })
     vim.api.nvim_open_win(buf, true, opts)
 end
 
--- }}}
+M.default_config = default_config
+M.config = config
+
 return M
