@@ -43,18 +43,12 @@ function M.render_date()
     end
 
     -- Get the word under the cursor
-    local word = vim.fn.expand('<cword>')
-
-    -- We may get a negative number; the cursor may be under the '-' of a negative timestamp
-    -- or it may be the first character of a timestamp with the cursor in the word. Also be
-    -- sure that we don't have trailing characters.
-    local full_word = vim.fn.expand('<cWORD>')
-    if full_word:sub(1, 1) == '-' then
-        word = '-' .. word
-    end
+    -- <cWORD> expands to the current WORD, which includes non-keyword characters
+    -- like '-' at the beginning of a negative timestamp.
+    local timestamp_str = vim.fn.expand('<cWORD>')
 
     -- Check if the word is a valid timestamp
-    local timestamp = tonumber(word)
+    local timestamp = tonumber(timestamp_str)
     if timestamp == nil then
         -- vim.notify("The current word is not a valid timestamp.", vim.log.levels.ERROR)
         return
