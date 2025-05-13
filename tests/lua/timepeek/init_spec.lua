@@ -125,9 +125,9 @@ describe('timepeek.render_date', function()
         os.date = function(format, timestamp)
             table.insert(mock_calls.os_date, { format = format, timestamp = timestamp })
             if format == timepeek.config.formats.utc then
-                return 'mock_utc_date' -- Ensure padding matches logic in render_date
+                return 'mock_utc_date'
             elseif format == timepeek.config.formats.local_time then
-                return 'mock_local_date' -- Ensure padding matches logic in render_date
+                return 'mock_local_date'
             end
             return original_os_date(format, timestamp) -- Call original for other formats
         end
