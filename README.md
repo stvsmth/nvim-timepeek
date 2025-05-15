@@ -92,11 +92,8 @@ you can dismiss the floating window. See `:help windows` for more information.
 The plugin exposes the following functions:
 
 ```lua
--- Display a date window for the timestamp under the cursor
-require('timepeek').render_date()
-
--- Configure the plugin
-require('timepeek').setup(options)
+-- An Ex command to display a date window for the timestamp under the cursor
+:lua require('timepeek').render_date()
 ```
 
 ## Example / Screenshot
@@ -111,3 +108,12 @@ require('timepeek').setup(options)
 Invoking `timepeek` with the cursor on `1098938400` will display:
 
 ![timepeek_usage_example](https://github.com/user-attachments/assets/f45a4f3a-3ccd-4118-b632-a9d248259953)
+
+## Development
+
+We use plenary.nvim for testing. Make sure you have it installed via your plugin manager of choice.
+
+To run tests:
+```bash
+vim -c 'PlenaryBustedDirectory tests'
+```
