@@ -35,7 +35,7 @@ describe('timepeek.setup', function()
         assert.are.equal(default_config_ref.mappings.peek, timepeek.config.mappings.peek)
     end)
 
-    it('should not set up keymaps if use_default_mappings is false', function()
+    it('should not set up mappings if use_default_mappings is false', function()
         -- Mock vim.keymap.set
         local keymap_set_calls = {}
         local original_vim_keymap_set = vim.keymap.set
@@ -204,8 +204,8 @@ describe('timepeek.render_date', function()
         assert.are.equal(#'  mock_utc_date  ', open_win_opts.width)
         assert.are.equal(2, open_win_opts.height)
 
-        -- Check keymaps for the new buffer
-        assert.True(#mock_calls.nvim_buf_set_keymap >= 2, 'Should set at least CR and ESC keymaps')
+        -- Check mappings for the new buffer
+        assert.True(#mock_calls.nvim_buf_set_keymap >= 2, 'Should set at least CR and ESC key maps')
         local cr_map_found = false
         local esc_map_found = false
         for _, map_call in ipairs(mock_calls.nvim_buf_set_keymap) do
@@ -270,5 +270,104 @@ describe('timepeek.render_date', function()
         assert.are.equal(0, #mock_calls.os_date, 'os.date should not be called')
         assert.are.equal(0, #mock_calls.nvim_create_buf, 'nvim_create_buf should not be called')
         assert.are.equal(0, #mock_calls.nvim_open_win, 'nvim_open_win should not be called')
+    end)
+
+    it('should handle negative timestamps correctly', function()
+        mock_calls.expand_cword_return = '-1098938400' -- Negative timestamp
+        timepeek.render_date()
+
+        assert.are.equal(2, #mock_calls.os_date, 'os.date should be called twice')
+        assert.are.same(-1098938400, mock_calls.os_date[1].timestamp)
+        assert.are.same(-1098938400, mock_calls.os_date[2].timestamp)
+    end)
+
+    it('should handle timestamps with trailing punctuation', function()
+        mock_calls.expand_cword_return = '1098938400,' -- Timestamp with comma
+        timepeek.render_date()
+
+        assert.are.equal(2, #mock_calls.os_date, 'os.date should be called twice')
+        assert.are.same(1098938400, mock_calls.os_date[1].timestamp)
+    end)
+
+    it('should respect custom date formats', function()
+        timepeek.setup({
+            formats = {
+                utc = '!%a, %d %b %Y',
+                local_time = '%a, %d %b %Y',
+            },
+        })
+        mock_calls.expand_cword_return = '1098938400'
+
+        timepeek.render_date()
+
+        assert.are.same('!%a, %d %b %Y', mock_calls.os_date[1].format)
+        assert.are.same('%a, %d %b %Y', mock_calls.os_date[2].format)
+    end)
+
+    it('should respect custom window positioning', function()
+        timepeek.setup({
+            window = {
+                row = 2,
+                col = 5,
+                relative = 'cursor',
+            },
+        })
+        mock_calls.expand_cword_return = '1098938400'
+
+        timepeek.render_date()
+
+        local open_win_opts = mock_calls.nvim_open_win[1].opts
+        assert.are.equal(2, open_win_opts.row)
+        assert.are.equal(5, open_win_opts.col)
+        assert.are.equal('cursor', open_win_opts.relative)
+    end)
+
+    it('should set correct buffer options', function()
+        mock_calls.expand_cword_return = '1098938400'
+        timepeek.render_date()
+
+        -- Check that buffer is created as non-listed and scratch
+        assert.are.equal(false, mock_calls.nvim_create_buf[1].listed)
+        assert.are.equal(true, mock_calls.nvim_create_buf[1].scratch)
+
+        -- Check buffer options
+        local buffer_options_set = false
+        for _, call in ipairs(mock_calls.nvim_set_option_value) do
+            if call.name == 'modifiable' and call.value == false then
+                buffer_options_set = true
+            end
+        end
+        assert.True(buffer_options_set, 'Buffer should be set as non-modifiable')
+    end)
+
+    it('should notify on invalid timestamp format', function()
+        -- Mock vim.notify
+        local notify_called = false
+        local original_notify = vim.notify
+        vim.notify = function(msg, level)
+            if msg == 'The current word is not a valid timestamp.' and level == vim.log.levels.ERROR then
+                notify_called = true
+            end
+        end
+
+        mock_calls.expand_cword_return = '123abc'
+        timepeek.render_date()
+
+        assert.True(notify_called, 'Should notify user about invalid timestamp')
+        vim.notify = original_notify
+    end)
+
+    it('should apply custom border style', function()
+        timepeek.setup({
+            window = {
+                border = 'single',
+            },
+        })
+        mock_calls.expand_cword_return = '1098938400'
+
+        timepeek.render_date()
+
+        local open_win_opts = mock_calls.nvim_open_win[1].opts
+        assert.are.equal('single', open_win_opts.border)
     end)
 end)
