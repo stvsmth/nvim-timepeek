@@ -3,6 +3,10 @@
 **timepeek** is a Neovim plugin to display Unix timestamps as human-readable dates in UTC and the
 local timezone.
 
+## Requirements
+
+- Neovim >= 0.8.0
+
 ## Installation
 
 Using [lazy.nvim](https://github.com/folke/lazy.nvim):
@@ -27,7 +31,7 @@ use {
 
 Using [vim-plug](https://github.com/junegunn/vim-plug):
 
-```vim.
+```viml
 Plug 'stvsmth/nvim-timepeek'
 ```
 
@@ -36,6 +40,14 @@ Then add to your init.lua:
 ```lua
 require('timepeek').setup()
 ```
+
+## Features
+
+- Convert Unix timestamps to human-readable dates in both UTC and local timezone
+- Floating window display next to cursor
+- Support for both second and millisecond timestamps
+- Customizable date formats and window appearance
+- Vim-like window navigation and text yanking support
 
 ## Configuration
 
@@ -85,24 +97,24 @@ vim.keymap.set('n', '<Leader>tp', require('timepeek').render_date, {})
 ## Usage
 
 Place the cursor on a Unix timestamp and press `<Leader>tt` (or your custom keybinding) to display
-the date in a floating window. While inside the floating window, you can dismiss it by pressing the
-`return` key or the `esc` key. You can also use standard vim motion commands to select one of the
-date strings and yank it to a register.
+the date in a floating window. While inside the floating window, you can:
 
-The floating window adheres to standard Neovim window management commands. In particular, if you
-navigate out of the floating window, you can use commands like `CTRL-W w` to switch windows so that
-you can dismiss the floating window. See `:help windows` for more information.
+- Press `<CR>` or `<ESC>` to dismiss the window
+- Use standard Vim motions to select and yank date strings
+- Navigate between windows with `<C-w>w` and other window commands
+
+The floating window follows standard Neovim window management commands. See `:help windows` for more information.
 
 ### API
 
 The plugin exposes the following functions:
 
 ```lua
--- An Ex command to display a date window for the timestamp under the cursor
-:lua require('timepeek').render_date()
+-- Display a date window for the timestamp under the cursor
+require('timepeek').render_date()
 ```
 
-## Example / Screenshot
+## Example
 
 ```json
 {
@@ -117,10 +129,14 @@ Invoking `timepeek` with the cursor on `1098938400` will display:
 
 ## Development
 
-We use plenary.nvim for testing. Make sure you have it installed via your plugin manager of choice.
+We use [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) for testing. Make sure you have it installed via your plugin manager of choice.
 
 To run tests:
 
 ```bash
-vim -c 'PlenaryBustedDirectory tests'
+nvim --headless -c "PlenaryBustedDirectory tests"
 ```
+
+## License
+
+MIT License. See [LICENSE](LICENSE) for details.
