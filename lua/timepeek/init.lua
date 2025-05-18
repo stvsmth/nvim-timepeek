@@ -47,12 +47,12 @@ function M.render_date()
     -- <cWORD> expands to the current WORD, which includes non-keyword characters
     -- like '-' at the beginning of a negative timestamp.
     local timestamp_str = vim.fn.expand('<cWORD>')
-    timestamp_str = timestamp_str:gsub("[%p]+$", "")
+    timestamp_str = timestamp_str:gsub('[%p]+$', '')
 
     -- Check if the word is a valid timestamp
     local timestamp = tonumber(timestamp_str)
     if timestamp == nil then
-        vim.notify("The current word is not a valid timestamp.", vim.log.levels.ERROR)
+        vim.notify('The current word is not a valid timestamp.', vim.log.levels.ERROR)
         return
     end
 
@@ -60,7 +60,7 @@ function M.render_date()
     if math.abs(timestamp) >= 1000000000000 and math.abs(timestamp) < 10000000000000 then
         timestamp = timestamp / 1000
     elseif math.abs(timestamp) >= 10000000000000 then
-        vim.notify("The current word is not a valid timestamp.", vim.log.levels.ERROR)
+        vim.notify('The current word is not a valid timestamp.', vim.log.levels.ERROR)
         return
     end
 
