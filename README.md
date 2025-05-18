@@ -6,6 +6,7 @@ local timezone.
 ## Installation
 
 Using [lazy.nvim](https://github.com/folke/lazy.nvim):
+
 ```lua
 {
   'stvsmth/nvim-timepeek',
@@ -16,6 +17,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 ```
 
 Using [packer.nvim](https://github.com/wbthomason/packer.nvim):
+
 ```lua
 use {
   'stvsmth/nvim-timepeek',
@@ -24,10 +26,13 @@ use {
 ```
 
 Using [vim-plug](https://github.com/junegunn/vim-plug):
-```vim
+
+```vim.
 Plug 'stvsmth/nvim-timepeek'
 ```
+
 Then add to your init.lua:
+
 ```lua
 require('timepeek').setup()
 ```
@@ -38,9 +43,9 @@ Configure `timepeek` by passing a table to the setup function. Here's the defaul
 
 ```lua
 require('timepeek').setup({
-  -- Enable/disable default keymaps
+  -- Enable/disable default key maps
   use_default_mappings = true,
-  -- Keymap definitions
+  -- Key map definitions
   mappings = {
     peek = "<Leader>tt"
   },
@@ -63,6 +68,7 @@ require('timepeek').setup({
 ### Custom Configuration Examples
 
 Disable default mapping and set custom formats:
+
 ```lua
 require('timepeek').setup({
   use_default_mappings = false,
@@ -72,7 +78,7 @@ require('timepeek').setup({
   }
 })
 
--- Add your own keymapping
+-- Add your own mapping
 vim.keymap.set('n', '<Leader>tp', require('timepeek').render_date, {})
 ```
 
@@ -114,6 +120,7 @@ Invoking `timepeek` with the cursor on `1098938400` will display:
 We use plenary.nvim for testing. Make sure you have it installed via your plugin manager of choice.
 
 To run tests:
+
 ```bash
 vim -c 'PlenaryBustedDirectory tests'
 ```
